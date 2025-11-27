@@ -10,7 +10,6 @@ export default class Message {
     readonly createdAt: Date;
     readonly contextIds: string[];
     readonly orderIndex: number;
-    readonly metadata?: Record<string, any>;
 
     constructor(
         params: {
@@ -19,7 +18,6 @@ export default class Message {
             content: string;
             contextIds?: string[];
             orderIndex?: number;
-            metadata?: Record<string, any>;
             id?: string;
             createdAt?: Date;
         }
@@ -31,6 +29,5 @@ export default class Message {
         this.createdAt = params.createdAt || new Date();
         this.contextIds = params.contextIds || [];
         this.orderIndex = params.orderIndex ?? 0;
-        this.metadata = params.metadata;
     }
 }

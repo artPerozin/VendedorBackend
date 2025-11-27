@@ -10,7 +10,7 @@ import { ChatCompletionMessageParam } from "openai/resources/index";
 import ConversationRepositoryInterface from "../Interfaces/ConversationRepositoryInterface";
 import systemPrompts from "../Enums/SystemPrompts";
 
-export default class OpenAIChatService {
+export default class GeminiChatService {
     private openai: OpenAI;
     private tokenRepository: TokenRepositoryInterface;
     private conversationRepository: ConversationRepositoryInterface;

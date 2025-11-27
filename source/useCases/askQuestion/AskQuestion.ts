@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import RepositoryFactoryInterface from "../../domain/Interfaces/RepositoryFactoryInterface";
 import EmbeddingService from "../../domain/Services/EmbeddingService";
 import ChunkService from "../../domain/Services/ChunkService";
-import OpenAIChatService from "../../domain/Services/OpenAIChatService";
+import OpenAIChatService from "../../domain/Services/GeminiChatService";
 import AskQuestionInput from "./AskQuestionInput";
 import AskQuestionOutput from "./AskQuestionOutput";
 import { Validators } from "../../shared/validator/Validators";
