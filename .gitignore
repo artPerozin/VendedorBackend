@@ -1,0 +1,7 @@
+node_modules/
+.vscode/
+dist/
+package-lock.json
+private.key
+public.key
+.env

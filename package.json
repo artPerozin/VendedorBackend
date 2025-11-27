@@ -1,0 +1,42 @@
+{
+    "dependencies": {
+        "@types/bcrypt": "^5.0.1",
+        "@types/express": "^4.17.20",
+        "@types/jsonwebtoken": "^8.5.9",
+        "@types/uuid": "^8.3.4",
+        "axios": "^1.8.3",
+        "bcrypt": "^5.1.1",
+        "docx4js": "^3.3.0",
+        "dotenv": "^16.6.1",
+        "express": "^4.21.2",
+        "jest": "^29.7.0",
+        "jsonwebtoken": "^9.0.2",
+        "mammoth": "^1.11.0",
+        "openai": "^5.20.0",
+        "pdf-parse": "^1.1.1",
+        "pg-promise": "^11.10.2",
+        "prisma": "^5.14.0",
+        "stopword": "^3.1.5",
+        "tiktoken": "^1.0.22",
+        "uuid": "^9.0.1"
+    },
+    "name": "backendtemplate",
+    "version": "0.0.1",
+    "description": "ArchitectureTemplate",
+    "main": "dist/source/main.js",
+    "author": "perozin.arthur@gmail.com",
+    "scripts": {
+        "test": "jest --runInBand test/",
+        "clean": "rm -rf dist/*/",
+        "main": "tsc && node ./dist/source/main.js",
+        "embeddings": "ts-node source/scripts/import-embeddings-run.ts"
+    },
+    "devDependencies": {
+        "@types/jest": "^30.0.0",
+        "@types/multer": "^2.0.0",
+        "@types/pdf-parse": "^1.1.5",
+        "@types/stopword": "^2.0.3",
+        "ts-jest": "^29.4.4",
+        "typescript": "^5.9.2"
+    }
+}
