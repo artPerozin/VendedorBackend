@@ -8,23 +8,24 @@ export default class CreateMessagesTable {
             DO $$
             BEGIN
                 IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'message_role') THEN
-                    CREATE TYPE message_role AS ENUM ('system', 'user', 'assistant');
+                    CREATE TYPE message_role AS ENUM ('system', 'user', 'model');
                 END IF;
             END$$;
 
             CREATE TABLE IF NOT EXISTS public.messages (
                 id UUID PRIMARY KEY,
-                conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+                contact_id UUID NOT NULL,
                 role message_role NOT NULL,
                 content TEXT NOT NULL,
-                context_ids text[] DEFAULT '{}',
-                metadata JSONB DEFAULT '{}'::jsonb,
-                order_index INT NOT NULL,
-                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                order_index INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                
+                CONSTRAINT fk_messages_contact
+                    FOREIGN KEY (contact_id)
+                    REFERENCES public.contacts (id)
+                    ON DELETE CASCADE
             );
-
-            CREATE INDEX IF NOT EXISTS idx_messages_conversation_order
-                ON public.messages(conversation_id, order_index);
         `);
     }
 

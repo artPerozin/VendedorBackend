@@ -1,15 +1,14 @@
 import Connection from "../database/Connection";
 
-export default class CreateChunksTable {
+export default class CreateContactsTable {
     constructor(private connection: Connection) {}
 
     async up(): Promise<void> {
         await this.connection.execute(`
-            CREATE TABLE IF NOT EXISTS public.chunks (
+            CREATE TABLE IF NOT EXISTS public.contacts (
                 id UUID PRIMARY KEY,
-                file_name TEXT NOT NULL,
-                chunk TEXT NOT NULL,
-                embedding JSONB NOT NULL,
+                phone_number TEXT NOT NULL,
+                intervencao BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -17,6 +16,6 @@ export default class CreateChunksTable {
     }
 
     async down(): Promise<void> {
-        await this.connection.execute(`DROP TABLE IF EXISTS public.chunks;`);
+        await this.connection.execute(`DROP TABLE IF EXISTS public.conversations;`);
     }
 }
