@@ -93,7 +93,7 @@ export class Validators {
   /**
    * Valida se um arquivo tem o tipo MIME correto
    */
-  static fileType(file: Express.Multer.File, allowedTypes: string[], fieldName: string = "file"): void {
+  static fileType(file: any, allowedTypes: string[], fieldName: string = "file"): void {
     if (!file) {
       throw ErrorFactory.validationError(
         `O campo '${fieldName}' é obrigatório`,
@@ -116,7 +116,7 @@ export class Validators {
   /**
    * Valida se um arquivo não excede o tamanho máximo (em bytes)
    */
-  static fileSize(file: Express.Multer.File, maxSize: number, fieldName: string = "file"): void {
+  static fileSize(file: any, maxSize: number, fieldName: string = "file"): void {
     if (!file) {
       throw ErrorFactory.validationError(
         `O campo '${fieldName}' é obrigatório`,
