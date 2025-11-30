@@ -7,7 +7,6 @@ export enum ErrorCode {
   
   // Erros de recursos (404)
   NOT_FOUND = "NOT_FOUND",
-  USER_NOT_FOUND = "USER_NOT_FOUND",
   CONVERSATION_NOT_FOUND = "CONVERSATION_NOT_FOUND",
   MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",
   

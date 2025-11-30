@@ -1,6 +1,11 @@
+import SearchEmbeddingDTO from "../DTO/SearchEmbeddingDTO";
 import Chunk from "../Entity/Chunk";
 
 export default interface ChunkRepositoryInterface {
-    create(token: Chunk): Promise<Chunk | null>;
-    getAll(): Promise<Chunk[]>;
+    create(chunk: Chunk): Promise<void>;
+    createMany(chunks: Chunk[]): Promise<void>
+    searchByEmbedding(dto: SearchEmbeddingDTO): Promise<Array<{
+        content: string;
+        similarity: number;
+    }>>;
 }

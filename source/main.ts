@@ -4,35 +4,24 @@ import ExpressHttp from "./infra/http/ExpressHttp";
 import Router from "./infra/http/Router";
 import DatabaseRepositoryFactory from "./infra/repository/DatabaseRepositoryFactory";
 import ExpressAuth from "./infra/http/Middleware/AuthExpress";
-import CreateUsersTable from "./infra/migrations/01.create_users_table";
-import CreateTokensTable from "./infra/migrations/02.create_tokens_table";
-import CreateChunksTable from "./infra/migrations/03.create_chunks_table";
-import CreateConversationsTable from "./infra/migrations/04.create_conversations_table";
+import CreateChunksTable from "./infra/migrations/02.create_chunks_table";
+import CreateContactsTable from "./infra/migrations/04.create_contacts_table";
 import CreateMessagesTable from "./infra/migrations/05.create_messages_table";
-import CreateFeedbacksTable from "./infra/migrations/06.create_feedbacks_table";
+import CreateDocumentsTable from "./infra/migrations/01.create_documents_table";
 
 config();
 
 console.log("🚀 Iniciando aplicação...");
 console.log("📋 Variáveis de ambiente carregadas:");
-console.log({
-  DB_HOST: process.env.DB_HOST,
-  DB_PORT: process.env.DB_PORT,
-  DB_DATABASE: process.env.DB_DATABASE,
-  DB_USERNAME: process.env.DB_USERNAME ? "***" : "não definido",
-  PORT: process.env.PORT || 8000,
-});
 
 async function runMigrations(connection: PostgreSQLConnection) {
   console.log("\n📦 Executando migrations...");
   
   const migrations = [
-    { name: "users", instance: new CreateUsersTable(connection) },
-    { name: "tokens", instance: new CreateTokensTable(connection) },
     { name: "chunks", instance: new CreateChunksTable(connection) },
-    { name: "conversations", instance: new CreateConversationsTable(connection) },
+    { name: "conversations", instance: new CreateContactsTable(connection) },
     { name: "messages", instance: new CreateMessagesTable(connection) },
-    { name: "feedbacks", instance: new CreateFeedbacksTable(connection) },
+    { name: "documents", instance: new CreateDocumentsTable(connection )}
   ];
 
   for (const migration of migrations) {
