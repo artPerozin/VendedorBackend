@@ -1,7 +1,11 @@
 import ChunkRepositoryInterface from "./ChunkRepositoryInterface";
-import ConversationRepositoryInterface from "./ConversationRepositoryInterface";
+import ContactRepositoryInterface from "./ContactRepositoryInterface";
+import DocumentRepositoryInterface from "./DocumentRepositoryInterface";
+import MessageRepositoryInterface from "./MessageRepositoryInterface";
 
 export default interface RepositoryFactoryInterface {
+    createDocumentRepository(): DocumentRepositoryInterface;
     createChunkRepository(): ChunkRepositoryInterface;
-    createConversationRepository(): ConversationRepositoryInterface;
+    createContactRepository(): ContactRepositoryInterface;
+    createMessageRepository(): MessageRepositoryInterface;
 }

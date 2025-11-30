@@ -1,5 +1,6 @@
+import { ResponseBuilder } from "../../shared/response/ResponseBuilder";
+
 export default interface AskQuestionOutput {
     answer: string;
-    conversationId: string;
-    messageId: string;
+    contactId: string;
 }
