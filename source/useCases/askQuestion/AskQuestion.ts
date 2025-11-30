@@ -71,7 +71,7 @@ export default class AskQuestion {
             const rewrittenQuestion = await this.queryRewriteService.handle(input.question, history);
             const queryVector = await this.embeddingService.handle(rewrittenQuestion);
             const chunks = await this.searchSimilarChunks.handle(queryVector);
-            const prompt = await this.promptBuilderService.handle(input.question, chunks);
+            const prompt = await this.promptBuilderService.handle(rewrittenQuestion, chunks);
             const aiResponse = await this.geminiChatService.handle(prompt, history);
 
             if (!aiResponse || !aiResponse.text) return { answer: "", contactId: contact.id };
