@@ -1,14 +1,14 @@
 import Connection from "../database/Connection";
 
-export default class CreateContactsTable {
+export default class CreateUsersTable {
     constructor(private connection: Connection) {}
 
     async up(): Promise<void> {
         await this.connection.execute(`
-            CREATE TABLE IF NOT EXISTS public.contacts (
+            CREATE TABLE IF NOT EXISTS public.users (
                 id UUID PRIMARY KEY,
-                phone_number TEXT NOT NULL,
-                intervencao BOOLEAN DEFAULT FALSE,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -16,6 +16,6 @@ export default class CreateContactsTable {
     }
 
     async down(): Promise<void> {
-        await this.connection.execute(`DROP TABLE IF EXISTS public.conversations;`);
+        await this.connection.execute(`DROP TABLE IF EXISTS public.users;`);
     }
 }

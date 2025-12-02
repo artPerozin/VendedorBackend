@@ -4,10 +4,11 @@ import ExpressHttp from "./infra/http/ExpressHttp";
 import Router from "./infra/http/Router";
 import DatabaseRepositoryFactory from "./infra/repository/DatabaseRepositoryFactory";
 import ExpressAuth from "./infra/http/Middleware/AuthExpress";
-import CreateChunksTable from "./infra/migrations/02.create_chunks_table";
-import CreateContactsTable from "./infra/migrations/04.create_contacts_table";
-import CreateMessagesTable from "./infra/migrations/05.create_messages_table";
-import CreateDocumentsTable from "./infra/migrations/01.create_documents_table";
+import CreateChunksTable from "./infra/migrations/03.create_chunks_table";
+import CreateContactsTable from "./infra/migrations/05.create_contacts_table";
+import CreateMessagesTable from "./infra/migrations/06.create_messages_table";
+import CreateDocumentsTable from "./infra/migrations/02.create_documents_table";
+import CreateUsersTable from "./infra/migrations/01.create_users_table";
 
 config();
 
@@ -18,10 +19,11 @@ async function runMigrations(connection: PostgreSQLConnection) {
   console.log("\n📦 Executando migrations...");
   
   const migrations = [
+    { name: "users", instance: new CreateUsersTable(connection) },
+    { name: "documents", instance: new CreateDocumentsTable(connection )},
     { name: "chunks", instance: new CreateChunksTable(connection) },
-    { name: "conversations", instance: new CreateContactsTable(connection) },
+    { name: "contacts", instance: new CreateContactsTable(connection) },
     { name: "messages", instance: new CreateMessagesTable(connection) },
-    { name: "documents", instance: new CreateDocumentsTable(connection )}
   ];
 
   for (const migration of migrations) {

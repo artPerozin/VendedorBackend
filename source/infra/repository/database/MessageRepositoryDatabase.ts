@@ -9,9 +9,9 @@ export default class MessageRepositoryDatabase implements MessageRepositoryInter
     async addMessage(message: Message): Promise<void> {
         await this.connection.execute(
             `INSERT INTO messages
-                (id, conversation_id, role, content, metadata, order_index, created_at)
+                (id, contact_id, role, content, order_index)
             VALUES
-                ($1, $2, $3, $4, $5, $6, $7);`,
+                ($1, $2, $3, $4, $5);`,
             [
                 message.id,
                 message.contactId,

@@ -28,8 +28,8 @@
     "scripts": {
         "test": "jest --runInBand test/",
         "clean": "rm -rf dist/*/",
-        "main": "tsc && node ./dist/source/main.js",
-        "generate:embeddings": "ts-node src/scripts/trainBotOptimized.ts"
+        "main": "tsc && node ./dist/main.js",
+        "generate:embeddings": "ts-node source/scripts/trainBotOptimized.ts"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",

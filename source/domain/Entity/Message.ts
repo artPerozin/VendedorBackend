@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 
-export type MessageRole = "system" | "user" | "assistant";
+export type MessageRole = "system" | "user" | "model";
 
 export default class Message {
     readonly contactId: string;

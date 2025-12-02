@@ -15,13 +15,13 @@
 
     "typeRoots": [
       "./node_modules/@types",
-      "./src/types"
+      "./source/types"
     ]
   },
   "include": [
     "source/**/*.ts",
     "test/**/*.ts",
-    "src/types/**/*.d.ts"
+    "source/types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

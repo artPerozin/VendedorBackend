@@ -3,11 +3,13 @@ import ContactRepositoryInterface from "../../domain/Interfaces/ContactRepositor
 import DocumentRepositoryInterface from "../../domain/Interfaces/DocumentRepositoryInterface";
 import MessageRepositoryInterface from "../../domain/Interfaces/MessageRepositoryInterface";
 import RepositoryFactoryInterface from "../../domain/Interfaces/RepositoryFactoryInterface";
+import UserRepositoryInterface from "../../domain/Interfaces/UserRepositoryInterface";
 import Connection from "../database/Connection";
 import ChunkRepositoryDatabase from "./database/ChunkRepositoryDatabase";
 import ContactRepositoryDatabase from "./database/ContactRepositoryDatabase";
 import DocumentRepositoryDatabase from "./database/DocumentRepositoryDatabase";
 import MessageRepositoryDatabase from "./database/MessageRepositoryDatabase";
+import UserRepositoryDatabase from "./database/UserRepositoryDatabase";
 
 export default class DatabaseRepositoryFactory implements RepositoryFactoryInterface {
 
@@ -15,16 +17,19 @@ export default class DatabaseRepositoryFactory implements RepositoryFactoryInter
     readonly chunkRepository: ChunkRepositoryInterface;
     readonly contactRepository: ContactRepositoryInterface;
     readonly messageRepository: MessageRepositoryInterface;
+    readonly userRepository: UserRepositoryInterface;
 
     constructor(connection: Connection) {
         this.documentRepository = new DocumentRepositoryDatabase(connection);
         this.chunkRepository = new ChunkRepositoryDatabase(connection);
         this.contactRepository = new ContactRepositoryDatabase(connection);
         this.messageRepository = new MessageRepositoryDatabase(connection);
+        this.userRepository = new UserRepositoryDatabase(connection);
     }
 
     createDocumentRepository(): DocumentRepositoryInterface { return this.documentRepository; }
     createChunkRepository(): ChunkRepositoryInterface { return this.chunkRepository; }
     createContactRepository(): ContactRepositoryInterface { return this.contactRepository; }
     createMessageRepository(): MessageRepositoryInterface { return this.messageRepository; }
+    createUserRepository(): UserRepositoryInterface { return this.userRepository; }
 }
