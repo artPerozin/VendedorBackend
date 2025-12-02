@@ -66,64 +66,56 @@ export class WebhookTransformerMiddleware {
   /**
    * Extrai o número de telefone removendo o sufixo do WhatsApp
    */
-  private static extractPhoneNumber(remoteJid: string): string {
-    return remoteJid.replace('@s.whatsapp.net', '').replace('@g.us', '');
+  private static extractPhoneNumber(identifier: string): string {
+    return identifier
+      .replace("@s.whatsapp.net", "")
+      .replace("@lid", "")
+      .replace("@g.us", "")
+      .trim();
   }
 
-  /**
-   * Extrai o texto da mensagem considerando diferentes tipos
-   */
-  private static extractMessage(message: WebhookPayload['data']['message']): string {
-    // Mensagem de texto simples
-    if (message.conversation) {
-      return message.conversation;
-    }
-    
-    // Mensagem de texto estendida (com formatação, reply, etc)
-    if (message.extendedTextMessage?.text) {
+  private static extractMessage(message: WebhookPayload["data"]["message"]): string {
+    if (message.conversation) return message.conversation;
+
+    if (message.extendedTextMessage?.text)
       return message.extendedTextMessage.text;
-    }
-    
-    // Legenda de imagem
-    if (message.imageMessage?.caption) {
+
+    if (message.imageMessage?.caption)
       return message.imageMessage.caption;
-    }
-    
-    // Legenda de vídeo
-    if (message.videoMessage?.caption) {
+
+    if (message.videoMessage?.caption)
       return message.videoMessage.caption;
-    }
-    
-    // Legenda de documento
-    if (message.documentMessage?.caption) {
+
+    if (message.documentMessage?.caption)
       return message.documentMessage.caption;
-    }
-    
-    return '';
+
+    return "";
   }
 
-  /**
-   * Valida se o payload possui os campos obrigatórios
-   */
   static validate(payload: WebhookPayload): void {
-    if (!payload.data?.key?.remoteJid) {
-      throw new Error('Campo remoteJid é obrigatório');
+    if (!payload.data?.key) {
+      throw new Error("Campo key é obrigatório");
+    }
+
+    // Agora o número pode vir em senderPn OU remoteJid
+    if (!payload.data.key.remoteJid && !payload.data.key.senderPn) {
+      throw new Error("Nenhum identificador remoto encontrado");
     }
 
     if (!payload.data?.message) {
-      throw new Error('Campo message é obrigatório');
+      throw new Error("Campo message é obrigatório");
     }
 
-    if (!payload.data?.pushName) {
-      throw new Error('Campo pushName é obrigatório');
+    if (!payload.data.pushName) {
+      throw new Error("Campo pushName é obrigatório");
     }
 
     const message = this.extractMessage(payload.data.message);
-    if (!message || message.trim() === '') {
-      throw new Error('Mensagem vazia não pode ser processada');
+    if (!message.trim()) {
+      throw new Error("Mensagem vazia não pode ser processada");
     }
   }
-
+  
   /**
    * Verifica se a mensagem é válida para processamento
    */
@@ -135,10 +127,10 @@ export class WebhookTransformerMiddleware {
     }
 
     // Ignora mensagens enviadas pelo próprio bot
-    // if (payload.data.key.fromMe) {
-    //   console.log('Mensagem enviada pelo bot ignorada');
-    //   return false;
-    // }
+    if (payload.data.key.fromMe) {
+      console.log('Mensagem enviada pelo bot ignorada');
+      return false;
+    }
 
     // Verifica se é um grupo (contém @g.us)
     if (payload.data.key.remoteJid.includes('@g.us')) {
