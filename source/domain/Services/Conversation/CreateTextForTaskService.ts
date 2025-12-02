@@ -11,7 +11,7 @@ export default class CreateTextForTaskService {
         formatHistoryForPrompt?: FormatHistoryForPrompt
     ) {
         this.ai = new GoogleGenAI({});
-        this.modelName = process.env.GEMINI_MODEL_FAST ?? "gemini-1.5-flash"; 
+        this.modelName = process.env.GEMINI_MODEL ?? "gemini-2.0-flash"; 
         this.formatHistoryForPrompt = formatHistoryForPrompt ?? new FormatHistoryForPrompt();
     }
 
