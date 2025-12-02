@@ -78,55 +78,23 @@ export default class AskQuestion {
     }
 
     async execute(input: AskQuestionInput): Promise<AskQuestionOutput> {
-        console.log('🚀 [AskQuestion] Iniciando execução');
-        console.log('📥 [AskQuestion] Input recebido:', {
-            question: input.question.substring(0, 50) + '...',
-            phoneNumber: input.phoneNumber,
-            pushName: input.pushName
-        });
-
         Validators.required(input.question, "question");
         Validators.required(input.phoneNumber, "phoneNumber");
         Validators.required(input.pushName, "pushName");
 
-        console.log('✅ [AskQuestion] Validações passaram');
-
         try {
-            console.log('🔍 [AskQuestion] Buscando ou criando contato...');
             const contact = await this.findOrCreateContact.handle(input.phoneNumber);
-            console.log('✅ [AskQuestion] Contato:', { id: contact.id, intervencao: contact.intervencao });
 
             if (contact.intervencao) {
-                console.log('⚠️ [AskQuestion] Contato requer intervenção humana, encerrando');
                 return { answer: "", contactId: contact.id };
             }
 
-            console.log('📜 [AskQuestion] Recuperando histórico de mensagens...');
             const history = await this.retrieveHistoryService.handle(contact.id);
-            console.log('✅ [AskQuestion] Histórico recuperado:', { messageCount: history.length });
-
-            console.log('✍️ [AskQuestion] Reescrevendo pergunta...');
             const rewrittenQuestion = await this.queryRewriteService.handle(input.question, history);
-            console.log('✅ [AskQuestion] Pergunta reescrita:', rewrittenQuestion.substring(0, 100) + '...');
-
-            console.log('🧮 [AskQuestion] Gerando embedding da pergunta...');
             const queryVector = await this.embeddingService.handle(rewrittenQuestion);
-            console.log('✅ [AskQuestion] Embedding gerado:', { vectorLength: queryVector.length });
-
-            console.log('🔎 [AskQuestion] Buscando chunks similares...');
             const chunks = await this.searchSimilarChunks.handle(queryVector);
-            console.log('✅ [AskQuestion] Chunks encontrados:', { chunkCount: chunks.length });
-
-            console.log('📝 [AskQuestion] Construindo prompt...');
             const prompt = await this.promptBuilderService.handle(rewrittenQuestion, chunks);
-            console.log('✅ [AskQuestion] Prompt construído:', { promptLength: prompt.length });
-
-            console.log('🤖 [AskQuestion] Enviando para Gemini...');
             const aiResponse = await this.geminiChatService.handle(prompt, history);
-            console.log('✅ [AskQuestion] Resposta do Gemini recebida:', { 
-                hasText: !!aiResponse?.text,
-                textLength: aiResponse?.text?.length || 0
-            });
 
             if (!aiResponse || !aiResponse.text) {
                 return { answer: "", contactId: contact.id };

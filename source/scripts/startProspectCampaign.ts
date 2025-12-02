@@ -30,9 +30,7 @@ function cleanPhone(input: string): string {
     return phone;
 }
 
-async function main() {
-    console.log("🚀 Iniciando rotina de prospecção...\n");
-
+export async function runProspection() {
     const connection = new PostgreSQLConnection({
         user: process.env.DB_USERNAME ?? "",
         password: process.env.DB_PASSWORD ?? "",
@@ -41,10 +39,7 @@ async function main() {
         port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
     });
 
-    console.log("📡 Conectando ao banco PostgreSQL...");
     const repositoryFactory = new DatabaseRepositoryFactory(connection);
-    console.log("✅ Conexão estabelecida!\n");
-
     const getContactsService = new GetContactsToProspectService();
     const getMessagesService = new GetFirstMessagesService();
     const findOrCreateContact = new FindOrCreateContact(repositoryFactory);
@@ -52,17 +47,11 @@ async function main() {
     const sendMessageService = new SendWhatsappMessageService();
 
     try {
-        console.log("📥 Buscando contatos para prospectar...");
         const contactsResponse = await getContactsService.handle();
         const contacts = contactsResponse?.data ?? [];
-        console.log(`📌 Contatos encontrados: ${contacts.length}\n`);
-
-        console.log("💬 Buscando mensagens iniciais...");
         const messages = await getMessagesService.handle();
-        console.log(`📌 Mensagens disponíveis: ${messages.length}\n`);
 
         if (!messages.length) {
-            console.log("⚠ Nenhuma mensagem encontrada. Encerrando...");
             return;
         }
 
@@ -70,34 +59,21 @@ async function main() {
             const rawPhone = contact.contact?.whatsapp ?? "";
             const whatsapp = cleanPhone(rawPhone);
 
-            console.log("--------------------------------------------------");
-            console.log(`👤 Contato: ${contact.name ?? "Sem nome"}`);
-            console.log(`📱 Telefone bruto: ${rawPhone}`);
-            console.log(`📞 Telefone limpo:  ${whatsapp}`);
-
             if (!whatsapp) {
-                console.log("⚠ Telefone inválido. Pulando...\n");
                 continue;
             }
 
             const message = messages[Math.floor(Math.random() * messages.length)];
-            console.log(`💬 Mensagem escolhida: "${message}"\n`);
 
             try {
-                console.log("🔎 Buscando/criando contato no banco...");
                 const contactModel = await findOrCreateContact.handle(whatsapp);
 
                 if (!contactModel) {
-                    console.log("⚠ Não foi possível obter/criar o contato. Pulando...\n");
                     continue;
                 }
-                console.log("✅ Contato ID:", contactModel.id);
-
-                console.log("📤 Enviando WhatsApp...");
+                
                 await sendMessageService.handle(whatsapp, message);
-                console.log("✅ Mensagem enviada!");
-
-                console.log("📝 Salvando histórico...");
+                
                 const aiMessage = new Message({
                     contactId: contactModel.id,
                     role: "model" as MessageRole,
@@ -106,24 +82,12 @@ async function main() {
                 });
 
                 await createMessageService.handle(aiMessage);
-                console.log("✅ Mensagem registrada!\n");
 
             } catch (err) {
-                console.error("❌ Erro processando telefone:", whatsapp);
-                console.error(err);
-                console.log("--------------------------------------------------\n");
                 continue;
             }
         }
-
-        console.log("\n✨ Rotina finalizada com sucesso!");
     } catch (err) {
-        console.error("🔥 Erro fatal:", err);
         process.exit(1);
     }
 }
-
-main().catch(err => {
-    console.error("🔥 Erro inesperado:", err);
-    process.exit(1);
-});
