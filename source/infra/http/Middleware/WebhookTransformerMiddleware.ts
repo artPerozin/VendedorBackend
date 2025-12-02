@@ -11,7 +11,7 @@ interface WebhookPayload {
       fromMe: boolean;
       id: string;
       senderLid?: string | null;
-      senderPn?: string | null;
+      senderPn: string;
       participant?: string | null;
       participantLid?: string | null;
     };
@@ -52,7 +52,7 @@ export class WebhookTransformerMiddleware {
    */
   static transform(payload: WebhookPayload): AskQuestionInput {
     const question = this.extractMessage(payload.data.message);
-    const phoneNumber = this.extractPhoneNumber(payload.data.key.remoteJid);
+    const phoneNumber = this.extractPhoneNumber(payload.data.key.senderPn);
     const pushName = payload.data.pushName || 'Usuário';
 
     return {
