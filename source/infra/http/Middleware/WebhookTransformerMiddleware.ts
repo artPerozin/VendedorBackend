@@ -167,21 +167,17 @@ export class WebhookTransformerMiddleware {
  */
 export function webhookMiddleware(payload: any): AskQuestionInput | null {
   try {
-    // Verifica estrutura básica
     if (!WebhookTransformerMiddleware.isValidStructure(payload)) {
       console.error('Payload com estrutura inválida');
       return null;
     }
 
-    // Verifica se deve processar a mensagem
     if (!WebhookTransformerMiddleware.shouldProcess(payload)) {
       return null;
     }
 
-    // Valida campos obrigatórios
     WebhookTransformerMiddleware.validate(payload);
 
-    // Transforma o payload
     const input = WebhookTransformerMiddleware.transform(payload);
     
     console.log('✅ Mensagem transformada:', {

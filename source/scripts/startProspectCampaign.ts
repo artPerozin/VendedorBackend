@@ -6,9 +6,9 @@ import { GetContactsToProspectService } from "../domain/Services/Agendor/GetCont
 import FindOrCreateContact from "../domain/Services/Contact/FindOrCreateContact";
 import SendWhatsappMessageService from "../domain/Services/Evolution/SendWhatsappMessageService";
 import CreateMessageService from "../domain/Services/Message/CreateMessageService";
-import GetFirstMessagesService from "../domain/Services/Message/GetFirstMessagesService";
 import PostgreSQLConnection from "../infra/database/PostgreSQLConnection";
 import DatabaseRepositoryFactory from "../infra/repository/DatabaseRepositoryFactory";
+import GetFirstMessagesService from "../domain/Services/Agendor/GetFirstMessagesService";
 
 function cleanPhone(input: string): string {
     if (!input) return "";

@@ -1,11 +1,15 @@
-export class GetFirstMessagesService {
+export default class GetFirstMessagesService {
     private messages: string[];
 
     constructor() {
         this.messages = [
-            "Olá! Tudo bem? Vi o trabalho da sua empresa e achei bem interessante. Podemos conversar um pouco sobre como podemos gerar mais resultados juntos?",
-            "Oi! Tudo bem? Sou da Evolução Compressores e acredito que podemos gerar melhores resultados para vocês. Podemos fazer uma conversa rápida?",
-            "Bom dia! Estou entrando em contato pois vi que vocês estão em crescimento e talvez possamos apoiar. Faz sentido conversarmos?",
+            `
+            Olá, tudo bem? Aqui é a Julia da Evolução Compressores.
+            Vi que já conversamos anteriormente e nosso vendedor gostaria de te visitar nos próximos dias.
+            
+            Gostaríamos de agendar uma visita rápida para falar sobre soluções em ar comprimido — incluindo geração, tratamento, eficiência energética, locações, serviços, planos de manutenção, monitoramento e tubulações.
+            Você teria um horário disponível para recebê-lo?
+            `
         ];
     }
 
