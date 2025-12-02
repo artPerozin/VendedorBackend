@@ -200,10 +200,8 @@ export function webhookMiddleware(payload: any): AskQuestionInput | null {
 export function applyWebhookRoute(http: any, conversationController: any): void {
   http.route("post", "/api/conversation/messages-upsert", true, async (params: any, body: any) => {
     try {
-      // Aplica o middleware para transformar o payload do webhook
       const input = webhookMiddleware(body);
       
-      // Se a mensagem não deve ser processada, retorna sucesso
       if (!input) {
         return { 
           success: true, 
@@ -211,7 +209,6 @@ export function applyWebhookRoute(http: any, conversationController: any): void 
         };
       }
       
-      // Passa o input transformado para o controller
       const result = await conversationController.askQuestion(input);
       
       return { 

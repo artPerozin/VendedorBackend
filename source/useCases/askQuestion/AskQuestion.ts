@@ -78,30 +78,57 @@ export default class AskQuestion {
     }
 
     async execute(input: AskQuestionInput): Promise<AskQuestionOutput> {
+        console.log("[askQuestion] Iniciando execute()", { input });
+
         Validators.required(input.question, "question");
         Validators.required(input.phoneNumber, "phoneNumber");
         Validators.required(input.pushName, "pushName");
 
         try {
+            console.log("[askQuestion] Buscando/criando contato...");
             const contact = await this.findOrCreateContact.handle(input.phoneNumber);
+            console.log("[askQuestion] Contato retornado:", contact);
 
             if (contact.intervencao) {
+                console.log("[askQuestion] Contato está em intervenção. Encerrando...");
                 return { answer: "", contactId: contact.id };
             }
 
+            console.log("[askQuestion] Buscando histórico...");
             const history = await this.retrieveHistoryService.handle(contact.id);
+            console.log("[askQuestion] Histórico obtido:", history);
+
+            console.log("[askQuestion] Reescrevendo pergunta...");
             const rewrittenQuestion = await this.queryRewriteService.handle(input.question, history);
+            console.log("[askQuestion] Pergunta reescrita:", rewrittenQuestion);
+
+            console.log("[askQuestion] Gerando embedding...");
             const queryVector = await this.embeddingService.handle(rewrittenQuestion);
+            console.log("[askQuestion] Vetor gerado:", queryVector);
+
+            console.log("[askQuestion] Buscando chunks similares...");
             const chunks = await this.searchSimilarChunks.handle(queryVector);
+            console.log("[askQuestion] Chunks retornados:", chunks);
+
+            console.log("[askQuestion] Construindo prompt...");
             const prompt = await this.promptBuilderService.handle(rewrittenQuestion, chunks);
+            console.log("[askQuestion] Prompt final:", prompt);
+
+            console.log("[askQuestion] Consultando GeminiChatService...");
             const aiResponse = await this.geminiChatService.handle(prompt, history);
+            console.log("[askQuestion] Resposta da IA:", aiResponse);
 
             if (!aiResponse || !aiResponse.text) {
+                console.log("[askQuestion] Resposta vazia da IA.");
                 return { answer: "", contactId: contact.id };
             }
 
+            console.log("[askQuestion] Obtendo última mensagem...");
             const lastMessage = await this.getLastMessageService.handle(contact.id);
             const lastIndex = lastMessage ? lastMessage.orderIndex : 0;
+            console.log("[askQuestion] Último índice:", lastIndex);
+
+            console.log("[askQuestion] Criando mensagem do usuário...");
             const userMessage = new Message({
                 contactId: contact.id,
                 role: "user" as MessageRole,
@@ -109,6 +136,9 @@ export default class AskQuestion {
                 orderIndex: lastIndex,
             });
             await this.createMessageService.handle(userMessage);
+            console.log("[askQuestion] Mensagem do usuário salva");
+
+            console.log("[askQuestion] Criando mensagem da IA...");
             const aiMessage = new Message({
                 contactId: contact.id,
                 role: "model" as MessageRole,
@@ -116,24 +146,44 @@ export default class AskQuestion {
                 orderIndex: lastIndex + 1,
             });
             await this.createMessageService.handle(aiMessage);
+            console.log("[askQuestion] Mensagem da IA salva");
 
             if (aiResponse.text.includes("[NECESSITA_INTERVENCAO]")) {
+                console.log("[askQuestion] Intervenção detectada!");
+
                 const mensagemLimpa = aiResponse.text.replace("[NECESSITA_INTERVENCAO]", "").trim();
+                console.log("[askQuestion] Mensagem limpa:", mensagemLimpa);
+
                 await this.setIntervencaoService.handle(contact.id);
+                console.log("[askQuestion] Flag de intervenção marcada");
+
                 await this.findOrCreateClient.handle(input.pushName, input.phoneNumber);
+                console.log("[askQuestion] Cliente criado/encontrado");
+
                 const description = await this.createTextForTaskService.handle(history, rewrittenQuestion, aiResponse.text);
+                console.log("[askQuestion] Descrição da tarefa:", description);
+
                 await this.createTaskForPersonService.handle(input.pushName, input.phoneNumber, description);
+                console.log("[askQuestion] Tarefa criada");
+
                 await this.sendWhatsappMessageService.handle(input.phoneNumber, mensagemLimpa);
+                console.log("[askQuestion] Mensagem enviada ao WhatsApp");
+
             } else {
+                console.log("[askQuestion] Enviando resposta normal ao WhatsApp...");
                 await this.sendWhatsappMessageService.handle(input.phoneNumber, aiResponse.text);
+                console.log("[askQuestion] Resposta enviada");
             }
 
+            console.log("[askQuestion] Finalizando com sucesso");
             return {
                 answer: aiResponse.text,
                 contactId: contact.id,
             };
 
         } catch (error) {
+            console.error("[askQuestion] Erro capturado:", error);
+
             if (error instanceof AppError) {
                 throw error;
             }
