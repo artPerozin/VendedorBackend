@@ -11,38 +11,55 @@ export default class ContactRepositoryDatabase implements ContactRepositoryInter
             "SELECT * FROM contacts WHERE phone_number = $1;",
             [contact.phoneNumber]
         );
-        
-        if (existing.length) {
-            throw ErrorFactory.alreadyExists("Contato", "numero de telefone", contact.phoneNumber);
+
+        if (existing.length > 0) {
+            throw ErrorFactory.alreadyExists(
+                "Contato",
+                "número de telefone",
+                contact.phoneNumber
+            );
         }
 
-        await this.connection.execute(
-            `INSERT INTO contacts
-                (id, phone_number, intervencao, created_at, updated_at)
-            VALUES
-                ($1, $2, $3, $4, $5);`,
+        const result = await this.connection.execute(
+            `
+            INSERT INTO contacts (id, phone_number, intervencao, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *;
+            `,
             [contact.id, contact.phoneNumber, contact.intervencao, new Date(), new Date()]
         );
-        
-        return await this.findById(contact.id);
+
+        if (!result.length) {
+            throw ErrorFactory.internalError("Falha ao criar contato no banco.");
+        }
+
+        return this.mapRowToContact(result[0]);
     }
 
-    async findById(id: string): Promise<Contact> {
+
+    async findById(id: string): Promise<Contact | null> {
         const rows = await this.connection.execute(
             "SELECT * FROM contacts WHERE id = $1;", 
             [id]
         );
-        if (!rows.length) throw ErrorFactory.notFound("Contato", id);
+        if (!rows.length) return null;
         return this.mapRowToContact(rows[0]);
     }
     
-    async findByPhoneNumber(phoneNumber: string): Promise<Contact> {
+    async findByPhoneNumber(phoneNumber: string): Promise<Contact | null> {
         const rows = await this.connection.execute(
             "SELECT * FROM contacts WHERE phone_number = $1;",
             [phoneNumber]
         );
-        if (!rows.length) throw ErrorFactory.notFound("Contato", phoneNumber);
+        if (!rows.length) return null;
         return this.mapRowToContact(rows[0]);
+    }
+
+    async setIntervencao(id: string): Promise<void> {
+        await this.connection.execute(
+            "UPDATE contacts SET intervencao = true WHERE id = $1;",
+            [id]
+        )
     }
 
     private mapRowToContact(r: any): Contact {

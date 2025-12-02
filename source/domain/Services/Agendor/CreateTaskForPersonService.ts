@@ -10,8 +10,8 @@ export class CreateTaskForPersonService {
     private createPersonService: CreatePersonService;
 
     constructor(
-        findUserByPhoneNumberService: FindUserByPhoneNumberService,
-        createPersonService: CreatePersonService,
+        findUserByPhoneNumberService?: FindUserByPhoneNumberService,
+        createPersonService?: CreatePersonService,
     ) {
         this.apiKey = process.env.AGENDOR_API_KEY ?? "";
         this.apiUrl = (process.env.AGENDOR_API_URL ?? "").replace(/\/+$/, "");
@@ -24,14 +24,11 @@ export class CreateTaskForPersonService {
         if (!this.taskType) throw new Error("AGENDOR_TASK_TYPE não configurada");
 
         this.agendorOwnerId = parseInt(responsableOwnerId);
-        this.findUserByPhoneNumberService = findUserByPhoneNumberService;
-        this.createPersonService = createPersonService;
+        this.findUserByPhoneNumberService = findUserByPhoneNumberService ?? new FindUserByPhoneNumberService();
+        this.createPersonService = createPersonService ?? new CreatePersonService();
     }
 
-    async handle(name: string, phoneNumber: string, userInterest?: string): Promise<any> {
-        if (!name) throw new Error("Nome não pode ser vazio");
-        if (!phoneNumber) throw new Error("Número de telefone não pode ser vazio");
-        
+    async handle(name: string, phoneNumber: string, description: string): Promise<any> {
         let person = await this.findUserByPhoneNumberService.handle(phoneNumber);
         let personData: any = person.length > 0 ? person[0] : null;
 
@@ -50,13 +47,12 @@ export class CreateTaskForPersonService {
         }
 
         const personId = personData.id;
-        const taskText = await this.buildTaskText(name, phoneNumber, userInterest);
         const url = `${this.apiUrl}/people/${personId}/tasks`;
         const dueDate = new Date().toISOString();
 
         const payload = {
             assigned_users: [this.agendorOwnerId],
-            text: taskText,
+            text: description,
             type: this.taskType,
             due_date: dueDate,
         };
@@ -76,16 +72,5 @@ export class CreateTaskForPersonService {
         }
 
         return await response.json();
-    }
-
-    private async buildTaskText(name: string, phoneNumber: string, userInterest?: string): Promise<string> {
-        let text = "Intervenção solicitada - Cliente necessita atendimento humano\n\n";
-        text += `Cliente: ${name}\n`;
-        text += `Telefone: ${phoneNumber}\n\n`;
-
-        if (userInterest) {
-            text += `Contexto da solicitação:\n${userInterest}\n\n`;
-        }
-        return text.trim();
     }
 }

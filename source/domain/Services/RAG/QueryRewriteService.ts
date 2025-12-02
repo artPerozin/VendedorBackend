@@ -1,12 +1,17 @@
 import { Content, GoogleGenAI } from "@google/genai";
+import FormatHistoryForPrompt from "../Helpers/FormatHistoryForPrompt";
 
 export default class QueryRewriteService {
     private ai: GoogleGenAI;
     private modelName: string;
+    private formatHistoryForPrompt: FormatHistoryForPrompt;
 
-    constructor() {
-        this.ai = new GoogleGenAI({});
+    constructor(
+        formatHistoryForPrompt?: FormatHistoryForPrompt
+    ) {
+        this.ai =   new GoogleGenAI({});
         this.modelName = process.env.GEMINI_MODEL_FAST ?? "gemini-1.5-flash"; 
+        this.formatHistoryForPrompt = formatHistoryForPrompt ?? new FormatHistoryForPrompt();
     }
 
     async handle(originalQuestion: string, history: Content[]): Promise<string> {
@@ -15,7 +20,7 @@ export default class QueryRewriteService {
         }
 
         const relevantHistory = history.slice(-6); 
-        const historyText = this.formatHistoryForPrompt(relevantHistory);
+        const historyText = this.formatHistoryForPrompt.handle(relevantHistory);
 
         const prompt = `
             Abaixo está um histórico de conversa e uma nova pergunta do usuário.
@@ -52,16 +57,5 @@ export default class QueryRewriteService {
             console.error("Erro ao reescrever query:", error);
             return originalQuestion;
         }
-    }
-
-    /**
-     * Helper para converter o objeto Content[] em string legível para o prompt
-     */
-    private formatHistoryForPrompt(history: Content[]): string {
-        return history.map(item => {
-            const role = item.role === "user" ? "user" : "assistant";
-            const text = item.parts?.[0]?.text || ""; 
-            return `${role}: ${text}`;
-        }).join("\n");
     }
 }
