@@ -129,16 +129,11 @@ export default class AskQuestion {
             });
 
             if (!aiResponse || !aiResponse.text) {
-                console.log('⚠️ [AskQuestion] Resposta vazia do Gemini');
                 return { answer: "", contactId: contact.id };
             }
 
-            console.log('📊 [AskQuestion] Obtendo última mensagem...');
             const lastMessage = await this.getLastMessageService.handle(contact.id);
             const lastIndex = lastMessage ? lastMessage.orderIndex : 0;
-            console.log('✅ [AskQuestion] Último índice:', lastIndex);
-
-            console.log('💾 [AskQuestion] Salvando mensagem do usuário...');
             const userMessage = new Message({
                 contactId: contact.id,
                 role: "user" as MessageRole,
@@ -146,9 +141,6 @@ export default class AskQuestion {
                 orderIndex: lastIndex,
             });
             await this.createMessageService.handle(userMessage);
-            console.log('✅ [AskQuestion] Mensagem do usuário salva');
-
-            console.log('💾 [AskQuestion] Salvando mensagem do assistente...');
             const aiMessage = new Message({
                 contactId: contact.id,
                 role: "model" as MessageRole,
@@ -156,58 +148,27 @@ export default class AskQuestion {
                 orderIndex: lastIndex + 1,
             });
             await this.createMessageService.handle(aiMessage);
-            console.log('✅ [AskQuestion] Mensagem do assistente salva');
 
             if (aiResponse.text.includes("[NECESSITA_INTERVENCAO]")) {
-                console.log('🚨 [AskQuestion] Intervenção necessária detectada');
-                
                 const mensagemLimpa = aiResponse.text.replace("[NECESSITA_INTERVENCAO]", "").trim();
-                console.log('🧹 [AskQuestion] Mensagem limpa:', mensagemLimpa.substring(0, 50) + '...');
-                
-                console.log('🔒 [AskQuestion] Definindo flag de intervenção...');
                 await this.setIntervencaoService.handle(contact.id);
-                console.log('✅ [AskQuestion] Flag de intervenção definida');
-                
-                console.log('👤 [AskQuestion] Criando cliente no Agendor...');
                 await this.findOrCreateClient.handle(input.pushName, input.phoneNumber);
-                console.log('✅ [AskQuestion] Cliente criado no Agendor');
-                
-                console.log('📄 [AskQuestion] Gerando descrição da tarefa...');
                 const description = await this.createTextForTaskService.handle(history, rewrittenQuestion, aiResponse.text);
-                console.log('✅ [AskQuestion] Descrição gerada:', { descriptionLength: description.length });
-                
-                console.log('📋 [AskQuestion] Criando tarefa no Agendor...');
                 await this.createTaskForPersonService.handle(input.pushName, input.phoneNumber, description);
-                console.log('✅ [AskQuestion] Tarefa criada no Agendor');
-                
-                console.log('📤 [AskQuestion] Enviando mensagem limpa via WhatsApp...');
                 await this.sendWhatsappMessageService.handle(input.phoneNumber, mensagemLimpa);
-                console.log('✅ [AskQuestion] Mensagem enviada via WhatsApp');
             } else {
-                console.log('📤 [AskQuestion] Enviando resposta via WhatsApp...');
                 await this.sendWhatsappMessageService.handle(input.phoneNumber, aiResponse.text);
-                console.log('✅ [AskQuestion] Resposta enviada via WhatsApp');
             }
 
-            console.log('🎉 [AskQuestion] Execução concluída com sucesso');
             return {
                 answer: aiResponse.text,
                 contactId: contact.id,
             };
 
         } catch (error) {
-            console.error('❌ [AskQuestion] Erro durante execução:', error);
-            console.error('❌ [AskQuestion] Stack trace:', error instanceof Error ? error.stack : 'N/A');
-            
             if (error instanceof AppError) {
-                console.error('❌ [AskQuestion] AppError detectado:', {
-                    message: error.message,
-                    statusCode: error.statusCode
-                });
                 throw error;
             }
-            
-            console.error('❌ [AskQuestion] Erro interno não tratado');
             throw ErrorFactory.internalError("Erro ao processar pergunta");
         }
     }

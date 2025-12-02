@@ -1,4 +1,4 @@
-export class GetFirstMessagesService {
+export default class GetFirstMessagesService {
     private messages: string[];
 
     constructor() {
@@ -10,9 +10,6 @@ export class GetFirstMessagesService {
     }
 
     async handle(): Promise<string[]> {
-        if (this.messages.length === 0) {
-            throw new Error("Lista de mensagens iniciais não pode ser vazia");
-        }
         return this.messages;
     }
 }

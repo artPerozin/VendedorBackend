@@ -20,7 +20,7 @@
         "prisma": "^5.14.0",
         "uuid": "^9.0.1"
     },
-    "name": "backendtemplate",
+    "name": "vendedor-ia",
     "version": "0.0.1",
     "description": "Vendedor IA integrada com Agendor CRM",
     "main": "dist/source/main.js",
@@ -29,7 +29,8 @@
         "test": "jest --runInBand test/",
         "clean": "rm -rf dist/*/",
         "main": "tsc && node ./dist/main.js",
-        "generate:embeddings": "ts-node source/scripts/trainBotOptimized.ts"
+        "generate:embeddings": "ts-node source/scripts/trainBotOptimized.ts",
+        "prospect:run": "ts-node source/scripts/startProspectCampaign.ts"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",
