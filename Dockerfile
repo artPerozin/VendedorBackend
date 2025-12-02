@@ -3,30 +3,64 @@
 # ============================
 FROM node:20-alpine AS builder
 
-# Dependências necessárias para bcrypt e pdf-parse
+# Dependências necessárias para bcrypt, pdf-parse e outras libs nativas
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
+# Copia package files
 COPY package*.json ./
-RUN npm install
+COPY tsconfig.json ./
 
-COPY . .
+# Instala dependências
+RUN npm ci --only=production && \
+    npm ci --only=development
 
-RUN npm run clean || true
-RUN npx tsc
+# Copia código fonte
+COPY source ./source
 
+# Compila TypeScript
+RUN npm run build || npx tsc
 
 # ============================
-# 2. Run stage
+# 2. Production stage
 # ============================
 FROM node:20-alpine
 
+# Dependências runtime necessárias
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    giflib-dev
+
 WORKDIR /app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.env.example .env
+# Copia package files
+COPY package*.json ./
 
-# O CMD é genérico — será sobrescrito
-CMD ["npm", "run", "main"]
+# Instala apenas dependências de produção
+RUN npm ci --only=production
+
+# Copia arquivos compilados do builder
+COPY --from=builder /app/dist ./dist
+
+# Cria usuário não-root
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
+# Expõe porta
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+    CMD node -e "require('http').get('http://localhost:8000/api/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Comando padrão (pode ser sobrescrito)
+CMD ["node", "dist/main.js"]
