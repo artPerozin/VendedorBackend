@@ -8,7 +8,7 @@ export default class CreateContactsTable {
             CREATE TABLE IF NOT EXISTS public.contacts (
                 id UUID PRIMARY KEY,
                 phone_number TEXT NOT NULL,
-                intervencao BOOLEAN DEFAULT FALSE,
+                message_sent BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

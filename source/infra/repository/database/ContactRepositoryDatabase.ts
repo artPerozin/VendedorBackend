@@ -22,11 +22,11 @@ export default class ContactRepositoryDatabase implements ContactRepositoryInter
 
         const result = await this.connection.execute(
             `
-            INSERT INTO contacts (id, phone_number, intervencao, created_at, updated_at)
+            INSERT INTO contacts (id, phone_number, message_sent, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
             `,
-            [contact.id, contact.phoneNumber, contact.intervencao, new Date(), new Date()]
+            [contact.id, contact.phoneNumber, contact.message_sent, new Date(), new Date()]
         );
 
         if (!result.length) {
@@ -55,9 +55,9 @@ export default class ContactRepositoryDatabase implements ContactRepositoryInter
         return this.mapRowToContact(rows[0]);
     }
 
-    async setIntervencao(id: string): Promise<void> {
+    async setMessageSent(id: string): Promise<void> {
         await this.connection.execute(
-            "UPDATE contacts SET intervencao = true WHERE id = $1;",
+            "UPDATE contacts SET message_sent = true WHERE id = $1;",
             [id]
         )
     }
@@ -66,7 +66,7 @@ export default class ContactRepositoryDatabase implements ContactRepositoryInter
         const contactInput = {
             id: r.id,
             phoneNumber: r.phone_number,
-            intervencao: r.intervencao
+            message_sent: r.message_sent
         };
         
         return new Contact(contactInput);

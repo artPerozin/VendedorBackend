@@ -18,18 +18,18 @@ import GetLastMessageService from "../../domain/Services/Message/GetLastMessageS
 import CreateMessageService from "../../domain/Services/Message/CreateMessageService";
 
 import RepositoryFactoryInterface from "../../domain/Interfaces/RepositoryFactoryInterface";
-import SetIntervencaoService from "../../domain/Services/Conversation/SetIntervencaoService";
 import FindOrCreateClient from "../../domain/Services/Agendor/FindOrCreateClient";
 import CreateTextForTaskService from "../../domain/Services/Conversation/CreateTextForTaskService";
 import { CreateTaskForPersonService } from "../../domain/Services/Agendor/CreateTaskForPersonService";
 import SendWhatsappMessageService from "../../domain/Services/Evolution/SendWhatsappMessageService";
+import SetMessageSent from "../../domain/Services/Conversation/SetIntervencaoService";
 
 export default class AskQuestion {
     private readonly embeddingService: EmbeddingService;
     private readonly geminiChatService: GeminiChatService;
     private readonly promptBuilderService: PromptBuilderService;
     private readonly queryRewriteService: QueryRewriteService;
-    private readonly setIntervencaoService: SetIntervencaoService;
+    private readonly setMessageSent: SetMessageSent;
     private readonly findOrCreateClient: FindOrCreateClient;
     private readonly createTextForTaskService: CreateTextForTaskService;
     private readonly createTaskForPersonService: CreateTaskForPersonService;
@@ -53,7 +53,7 @@ export default class AskQuestion {
         createTaskForPersonService?: CreateTaskForPersonService,
         sendWhatsappMessageService?: SendWhatsappMessageService,
         
-        setIntervencaoService?: SetIntervencaoService,
+        setMessageSent?: SetMessageSent,
         createMessageService?: CreateMessageService,
         findOrCreateContact?: FindOrCreateContact,
         getLastMessageService?: GetLastMessageService,
@@ -69,7 +69,7 @@ export default class AskQuestion {
         this.createTaskForPersonService = createTaskForPersonService ?? new CreateTaskForPersonService();
         this.sendWhatsappMessageService = sendWhatsappMessageService ?? new SendWhatsappMessageService();
         
-        this.setIntervencaoService = setIntervencaoService ?? new SetIntervencaoService(this.repositoryFactory);
+        this.setMessageSent = setMessageSent ?? new SetMessageSent(this.repositoryFactory);
         this.createMessageService = createMessageService ?? new CreateMessageService(this.repositoryFactory);
         this.findOrCreateContact = findOrCreateContact ?? new FindOrCreateContact(this.repositoryFactory);
         this.getLastMessageService = getLastMessageService ?? new GetLastMessageService(this.repositoryFactory);
@@ -88,11 +88,6 @@ export default class AskQuestion {
             console.log("[askQuestion] Buscando/criando contato...");
             const contact = await this.findOrCreateContact.handle(input.phoneNumber);
             console.log("[askQuestion] Contato retornado:", contact);
-
-            if (contact.intervencao) {
-                console.log("[askQuestion] Contato está em intervenção. Encerrando...");
-                return { answer: "", contactId: contact.id };
-            }
 
             console.log("[askQuestion] Buscando histórico...");
             const history = await this.retrieveHistoryService.handle(contact.id);
@@ -154,9 +149,6 @@ export default class AskQuestion {
 
                 const mensagemLimpa = aiResponse.text.replace("[NECESSITA_INTERVENCAO]", "").trim();
                 console.log("[askQuestion] Mensagem limpa:", mensagemLimpa);
-
-                await this.setIntervencaoService.handle(contact.id);
-                console.log("[askQuestion] Flag de intervenção marcada");
 
                 await this.findOrCreateClient.handle(input.pushName, input.phoneNumber);
                 console.log("[askQuestion] Cliente criado/encontrado");

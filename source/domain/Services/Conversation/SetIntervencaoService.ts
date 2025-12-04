@@ -1,7 +1,7 @@
 import ContactRepositoryInterface from "../../Interfaces/ContactRepositoryInterface";
 import RepositoryFactoryInterface from "../../Interfaces/RepositoryFactoryInterface";
 
-export default class SetIntervencaoService {
+export default class SetMessageSent {
     private contactRepository: ContactRepositoryInterface;
 
     constructor(repositoryFactory: RepositoryFactoryInterface){
@@ -9,6 +9,6 @@ export default class SetIntervencaoService {
     }
 
     async handle(contactId: string): Promise<void> {
-        await this.contactRepository.setIntervencao(contactId);
+        await this.contactRepository.setMessageSent(contactId);
     }
 }

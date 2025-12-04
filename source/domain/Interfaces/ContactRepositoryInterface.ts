@@ -4,5 +4,5 @@ export default interface ContactRepositoryInterface {
     create(chat: Contact): Promise<Contact>;
     findById(id: string): Promise<Contact| null>;
     findByPhoneNumber(phoneNumber: string): Promise<Contact| null>;
-    setIntervencao(id: string): Promise<void>;
+    setMessageSent(id: string): Promise<void>;
 }

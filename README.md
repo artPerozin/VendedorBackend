@@ -107,7 +107,7 @@ O **Vendedor IA** é uma assistente virtual chamada **Julia**, consultora da Evo
    ├─ PromptBuilder (contexto + pergunta)
    ├─ GeminiChatService (resposta)
    └─ Detecta [NECESSITA_INTERVENCAO]?
-       ├─ SIM → CreateTask + SetIntervencao
+       ├─ SIM → CreateTask
        └─ NÃO → Continua conversa
 5. SendWhatsappMessage → Evolution API
 6. Resposta → Cliente

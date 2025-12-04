@@ -11,7 +11,6 @@ function getBrazilTime() {
         hour12: false
     });
 
-    // Ex.: "04/12/2025, 13:33:07"
     const [datePart, timePart] = brString.split(", ");
     const [hour, minute, second] = timePart.split(":").map(Number);
 

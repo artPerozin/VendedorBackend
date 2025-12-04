@@ -32,7 +32,7 @@ export class ContactRepositoryMemory implements ContactRepositoryInterface {
         return contact;
     }
 
-    async setIntervencao(id: string): Promise<void> {
+    async setMessageSent(id: string): Promise<void> {
         const index = this.contacts.findIndex(c => c.id === id);
         if (index === -1) {
             throw ErrorFactory.notFound("Contato", id);
@@ -42,7 +42,7 @@ export class ContactRepositoryMemory implements ContactRepositoryInterface {
         const updatedContact = new Contact({
             id: contact.id,
             phoneNumber: contact.phoneNumber,
-            intervencao: true,
+            message_sent: true,
         });
         
         this.contacts[index] = updatedContact;
