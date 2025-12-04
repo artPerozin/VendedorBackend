@@ -54,7 +54,6 @@ export class WebhookTransformerMiddleware {
     const question = this.extractMessage(payload.data.message);
 
     const phoneNumberField = payload.data.key.senderPn ?? payload.data.key.remoteJid
-
     const phoneNumber = this.extractPhoneNumber(phoneNumberField);
     const pushName = payload.data.pushName || 'Usuário';
 

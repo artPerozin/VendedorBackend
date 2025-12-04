@@ -3,13 +3,13 @@ export default class GetFirstMessagesService {
 
     constructor() {
         this.messages = [
-            `
-            Olá, tudo bem? Aqui é a Julia da Evolução Compressores.
-            Vi que já conversamos anteriormente e nosso vendedor gostaria de te visitar nos próximos dias.
-            
-            Gostaríamos de agendar uma visita rápida para falar sobre soluções em ar comprimido — incluindo geração, tratamento, eficiência energética, locações, serviços, planos de manutenção, monitoramento e tubulações.
-            Você teria um horário disponível para recebê-lo?
-            `
+            `Olá, tudo bem? Aqui é a Julia da Evolução Compressores.
+
+        Vi que já conversamos anteriormente e nosso vendedor gostaria de te visitar nos próximos dias.
+
+        Gostaríamos de agendar uma visita rápida para falar sobre soluções em ar comprimido — incluindo geração, tratamento, eficiência energética, locações, serviços, planos de manutenção, monitoramento e tubulações.
+
+        Você teria um horário disponível para recebê-lo?`
         ];
     }
 
