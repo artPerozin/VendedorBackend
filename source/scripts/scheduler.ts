@@ -3,6 +3,21 @@ dotenv.config();
 import cron from "node-cron";
 import { runProspection } from "./startProspectCampaign";
 
+function getBrazilTime() {
+    const now = new Date();
+
+    const brString = now.toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour12: false
+    });
+
+    // Ex.: "04/12/2025, 13:33:07"
+    const [datePart, timePart] = brString.split(", ");
+    const [hour, minute, second] = timePart.split(":").map(Number);
+
+    return { hour, minute, second };
+}
+
 function isWithinSchedule(): boolean {
     const schedule = process.env.PROSPECT_SCHEDULE ?? "";
     console.log("📅 PROSPECT_SCHEDULE recebido:", schedule);
@@ -12,16 +27,9 @@ function isWithinSchedule(): boolean {
         return true;
     }
 
-    const now = new Date();
-    const formatter = new Intl.DateTimeFormat("pt-BR", {
-        timeZone: "America/Sao_Paulo",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-    });
-    const [{ value: hour }, , { value: minute }] = formatter.formatToParts(now);
-    const minutes = Number(hour) * 60 + Number(minute);
-    console.log(`🕒 Agora: ${now.toISOString()} | Minutos do dia: ${minutes}`);
+    const { hour, minute } = getBrazilTime();
+    const minutes = hour * 60 + minute;
+    console.log(`🕒 Agora (BR): ${hour}:${minute} | Minutos do dia: ${minutes}`);
 
     const ranges = schedule.split(",");
     console.log("⏱️ Intervalos encontrados:", ranges);
