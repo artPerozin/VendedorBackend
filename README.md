@@ -18,8 +18,6 @@ Sistema de vendas automatizado com Inteligência Artificial integrado ao WhatsAp
 - [Prospecção Automatizada](#prospecção-automatizada)
 - [Testes](#testes)
 - [Docker](#docker)
-- [Contribuindo](#contribuindo)
-- [Licença](#licença)
 
 ## 🎯 Visão Geral
 
@@ -524,14 +522,6 @@ CMD ["npm", "run", "main"]
 docker build -t vendedor-ia .
 docker run -p 8000:8000 --env-file .env vendedor-ia
 ```
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
 
 ### Padrões de Código
 
