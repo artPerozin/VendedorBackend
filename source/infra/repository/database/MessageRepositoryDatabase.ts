@@ -52,7 +52,6 @@ export default class MessageRepositoryDatabase implements MessageRepositoryInter
             [contactId]
         )
         if (!rows.length) return null;
-        console.log(rows[0]);
         return this.mapRowToMessage(rows[0]);
     }
 

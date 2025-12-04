@@ -126,7 +126,6 @@ export default class AskQuestion {
             console.log("[askQuestion] Obtendo última mensagem...");
             const lastMessage = await this.getLastMessageService.handle(contact.id);
             console.log("[askQuestion] Última mensagem: ");
-            console.log(lastMessage);
             const lastIndex = lastMessage ? lastMessage.orderIndex : 0;
             console.log("[askQuestion] Último índice:", lastIndex);
 
