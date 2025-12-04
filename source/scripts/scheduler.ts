@@ -13,7 +13,14 @@ function isWithinSchedule(): boolean {
     }
 
     const now = new Date();
-    const minutes = now.getHours() * 60 + now.getMinutes();
+    const formatter = new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    });
+    const [{ value: hour }, , { value: minute }] = formatter.formatToParts(now);
+    const minutes = Number(hour) * 60 + Number(minute);
     console.log(`🕒 Agora: ${now.toISOString()} | Minutos do dia: ${minutes}`);
 
     const ranges = schedule.split(",");
