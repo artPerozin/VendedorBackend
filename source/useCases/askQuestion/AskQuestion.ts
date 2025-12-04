@@ -89,11 +89,6 @@ export default class AskQuestion {
             const contact = await this.findOrCreateContact.handle(input.phoneNumber);
             console.log("[askQuestion] Contato retornado:", contact);
 
-            if (contact.intervencao) {
-                console.log("[askQuestion] Contato está em intervenção. Encerrando...");
-                return { answer: "", contactId: contact.id };
-            }
-
             console.log("[askQuestion] Buscando histórico...");
             const history = await this.retrieveHistoryService.handle(contact.id);
             console.log("[askQuestion] Histórico obtido:", history);
@@ -154,9 +149,6 @@ export default class AskQuestion {
 
                 const mensagemLimpa = aiResponse.text.replace("[NECESSITA_INTERVENCAO]", "").trim();
                 console.log("[askQuestion] Mensagem limpa:", mensagemLimpa);
-
-                await this.setIntervencaoService.handle(contact.id);
-                console.log("[askQuestion] Flag de intervenção marcada");
 
                 await this.findOrCreateClient.handle(input.pushName, input.phoneNumber);
                 console.log("[askQuestion] Cliente criado/encontrado");
