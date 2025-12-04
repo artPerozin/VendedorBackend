@@ -125,6 +125,7 @@ export default class AskQuestion {
 
             console.log("[askQuestion] Obtendo última mensagem...");
             const lastMessage = await this.getLastMessageService.handle(contact.id);
+            console.log("[askQuestion] Última mensagem: ");
             const lastIndex = lastMessage ? lastMessage.orderIndex : 0;
             console.log("[askQuestion] Último índice:", lastIndex);
 
@@ -133,7 +134,7 @@ export default class AskQuestion {
                 contactId: contact.id,
                 role: "user" as MessageRole,
                 content: input.question,
-                orderIndex: lastIndex,
+                orderIndex: lastIndex + 1,
             });
             await this.createMessageService.handle(userMessage);
             console.log("[askQuestion] Mensagem do usuário salva");
@@ -143,7 +144,7 @@ export default class AskQuestion {
                 contactId: contact.id,
                 role: "model" as MessageRole,
                 content: aiResponse.text,
-                orderIndex: lastIndex + 1,
+                orderIndex: lastIndex + 2,
             });
             await this.createMessageService.handle(aiMessage);
             console.log("[askQuestion] Mensagem da IA salva");

@@ -41,16 +41,15 @@ export default class MessageRepositoryDatabase implements MessageRepositoryInter
         }));
     }
 
-    async getLastMessage(phoneNumber: string): Promise<Message | null> {
+    async getLastMessage(contactId: string): Promise<Message | null> {
+        console.log(contactId);
         const rows = await this.connection.execute(
-            `SELECT
-                *
+            `SELECT m.*
             FROM messages m
-            JOIN contacts c on c.id = m.contact_id
-            WHERE c.phone_number = $1
+            JOIN contacts c ON c.id = $1
             ORDER BY m.order_index DESC
             LIMIT 1;`,
-            [phoneNumber]
+            [contactId]
         )
         if (!rows.length) return null;
         return this.mapRowToMessage(rows[0]);
@@ -58,12 +57,11 @@ export default class MessageRepositoryDatabase implements MessageRepositoryInter
 
     private mapRowToMessage(r: any): Message {
         const messageInput = {
-            id: r.id,
-            contactId: r.contactId,
+            contactId: r.contact_id,
             role: r.role,
             content: r.content,
-            contextIds: r.contextIds,
-            orderIndex: r.orderIndex,
+            orderIndex: r.order_index,
+            id: r.id,
         };
     
         return new Message(messageInput)
